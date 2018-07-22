@@ -1,0 +1,31 @@
+import numpy as np
+
+def createDataset():
+    group=np.array([[90,100],[88,90],[85,95],[10,20],[30,40],[50,30]])
+    labels=['A','A','A','D','D','D']
+    return group,labels
+
+def classify(inX,dataset,labels,k):
+    dataSize=dataset.shape[0]                         #返回矩阵的列的大小
+    diffMat=np.tile(inX,(dataSize,1))-dataset
+    sqDiffMat=diffMat**2                              #求得向量间的欧式距离
+    sqDistance=sqDiffMat.sum(axis=1)
+    distances=sqDistance**0.5
+    
+    SortDistance=distances.argsort()                #对距离从小到大进行排列并返回下标
+
+    classCount={}
+    for i in range(k):                              #选取距离最小的k个点
+        voteLabel=labels[SortDistance[i]]           #找到它们的label是什么
+        classCount[voteLabel]=classCount.get(voteLabel,0)+1          #字典的内置函数，返回指定键值，不存在则返回0,此操作来统计前k个数据对应标签出现次数
+    max_count=0
+    for key,value in classCount.items():
+        if value>max_count:                                        #遍历找出出现次数最多的标签
+            max_count=value
+            classes=key
+    return classes
+
+inX=np.array([98,100])
+dataset,labels=createDataset()
+k=3
+print(classify(inX,dataset,labels,k))
